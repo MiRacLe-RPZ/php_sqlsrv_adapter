@@ -45,17 +45,16 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
 
     function mssql_query($sql, $conn = null) {
         $conn = ($conn === null) ? $GLOBALS['_SQLSRV_CONNECT'] : $conn;
-	$return = sqlsrv_query($conn , $sql,array(), array( "Scrollable" => 'buffered' ));
+        $return = sqlsrv_query($conn , $sql,array(), array( "Scrollable" => 'buffered' ));
         return $return;
     }
 
-
     function mssql_fetch_object($rsql) {
-        if ($array = sqlsrv_fetch_array($rsql, SQLSRV_FETCH_ASSOC)) {
+        if ($array = mssql_fetch_array($rsql, SQLSRV_FETCH_ASSOC)) {
             $object = new stdClass();
-            if (is_array($array) && count($array) > 0) {
+            if (is_array($array) && !empty($array)) {
                 foreach ($array as $name => $value) {
-                    $name = strtolower(trim($name));
+                    $name = trim($name);
                     if (!empty($name)) {
                         $object->$name = $value;
                     }
@@ -70,13 +69,24 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
     }
 
     function mssql_fetch_array($rsql, $mode = SQLSRV_FETCH_ASSOC) {
+        $meta = sqlsrv_field_metadata($rsql);
         $return = sqlsrv_fetch_array($rsql, $mode);
+        if (is_array($return)) {
+            foreach ($meta as $data) {
+                switch ($data['Type']) {
+                    case 3:
+                        $return[$data['Name']] = floatval($return[$data['Name']]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         return (null === $return) ? false : $return;
     }
 
     function mssql_fetch_assoc($rsql, $mode = SQLSRV_FETCH_ASSOC) {
-        $return = sqlsrv_fetch_array($rsql, $mode);
-        return (null === $return) ? false : $return;
+        return mssql_fetch_array($rsql, $mode);
     }
 
     function mssql_fetch_row($rsql) {
@@ -123,7 +133,7 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
         return sqlsrv_free_stmt($result);
     }
     function mssql_data_seek($result , $row_number) {
-          debug_print_backtrace();
+        debug_print_backtrace();
     }
     function mssql_bind($stmt , $param_name , &$var , $type ,$is_output = false ,  $is_null = false , $maxlen = -1 ) {
         debug_print_backtrace();
