@@ -37,10 +37,7 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
     }
 
     function mssql_select_db($databasename, $conn = null) {
-        if (is_resource($conn)) {
-            sqlsrv_query($conn, 'use [' . $databasename . ']');
-        }
-        return true;
+        return (false !== mssql_query('use [' . $databasename . ']',$conn));
     }
 
     function mssql_query($sql, $conn = null) {
