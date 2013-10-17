@@ -72,7 +72,7 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
             foreach ($meta as $data) {
                 switch ($data['Type']) {
                     case 3:
-                        $return[$data['Name']] = floatval($return[$data['Name']]);
+                        $return[$data['Name']] = (null !== $return[$data['Name']]) ? floatval($return[$data['Name']]) : null;
                         break;
                     default:
                         break;
