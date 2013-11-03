@@ -19,7 +19,7 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
         $connectionInfo = array(
             "UID" => $username,
             "PWD" => $password,
-            "APP" => "PHP5",
+            "APP" => "Samo-Online",
             "MultipleActiveResultSets" => true,
         );
         $conn = sqlsrv_connect($hostname, $connectionInfo);
@@ -83,7 +83,7 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
     }
 
     function mssql_fetch_assoc($rsql, $mode = SQLSRV_FETCH_ASSOC) {
-        return mssql_fetch_array($rsql, $mode);
+        return mssql_fetch_array($rsql, $mode = SQLSRV_FETCH_ASSOC);
     }
 
     function mssql_fetch_row($rsql) {
@@ -130,7 +130,7 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
         return sqlsrv_free_stmt($result);
     }
     function mssql_data_seek($result , $row_number) {
-        debug_print_backtrace();
+          debug_print_backtrace();
     }
     function mssql_bind($stmt , $param_name , &$var , $type ,$is_output = false ,  $is_null = false , $maxlen = -1 ) {
         debug_print_backtrace();
@@ -142,7 +142,9 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
         debug_print_backtrace();
     }
     function mssql_field_type($result, $offset = -1) {
-        debug_print_backtrace();
+        $meta = sqlsrv_field_metadata($result);
+        $offset = (-1 === $offset) ? 0 : $offset;
+        return isset($meta[$offset]) ? $meta[$offset]['Type'] : false;
     }
     function mssql_field_seek($result, $offset) {
         debug_print_backtrace();
@@ -163,10 +165,14 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
         debug_print_backtrace();
     }
     function mssql_field_name($result,$offset = -1) {
-        debug_print_backtrace();
+        $meta = sqlsrv_field_metadata($result);
+        $offset = (-1 === $offset) ? 0 : $offset;
+        return isset($meta[$offset]) ? $meta[$offset]['Name'] : false;
     }
     function mssql_field_length($result,$offset = -1) {
-        debug_print_backtrace();
+        $meta = sqlsrv_field_metadata($result);
+        $offset = (-1 === $offset) ? 0 : $offset;
+        return isset($meta[$offset]) ? $meta[$offset]['Size'] : false;
     }
     function mssql_fetch_batch($result) {
         debug_print_backtrace();
