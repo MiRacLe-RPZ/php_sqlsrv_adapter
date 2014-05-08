@@ -122,8 +122,15 @@ if (!function_exists('mssql_connect') && function_exists('sqlsrv_connect')) {
 
     function mssql_get_last_message() {
         $errors = sqlsrv_errors();
-        $last = end($errors);
-        return $last['message'];
+        if (is_array($errors)) {
+        /* If errors and/or warnings occurred on the last sqlsrv operation,
+            an array of arrays containing error information is returned.
+        */
+            $last = end($errors);
+            return $last['message'];
+        }
+        /* If no errors and/or warnings occurred on the last sqlsrv operation, NULL is returned */
+        return "";
     }
 
     function mssql_free_result($result) {
